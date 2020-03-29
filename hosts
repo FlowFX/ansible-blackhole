@@ -1,2 +1,2 @@
 [piholes]
-blackhole.local ansible_user=pi
+blackhole.local ansible_host=192.168.178.124 ansible_user=pi

@@ -10,42 +10,10 @@
         state: present
       tags: software
 
-    - name: Deny everything and enable UFW
-      ufw:
-        state: enabled
-        policy: deny
+    - name: Configure UFW
+      include_tasks: tasks/ufw.yml
       tags: ufw
 
-    - name: Allow OpenSSH
-      ufw:
-        rule: allow
-        name: ssh
-      tags: ufw
-
-    - name: Allow HTTP and HTTPS
-      ufw:
-        rule: allow
-        port: '80,443'
-        proto: tcp
-      tags: ufw
-
-    - name: Allow access to port 53
-      ufw:
-        rule: allow
-        port: '53'
-      tags: ufw
-
-    - name: Clone whitelist script
-      git:
-        repo: "https://github.com/anudeepND/whitelist.git"
-        dest: /opt/whitelist
-        update: yes
-      tags: pihole
-
-    - name: Create crontab entry to run whitelist.sh
-      cron:
-        name: Update Pi-Hole whitelist
-        special_time: daily
-        user: root
-        job: "/opt/whitelist/scripts/whitelist.sh"
+    - name: Configure Pi-Hole Whitelist 
+      include_tasks: tasks/whitelist.yml
       tags: pihole

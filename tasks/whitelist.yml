@@ -1,0 +1,15 @@
+---
+- name: Clone whitelist script
+  git:
+    repo: "https://github.com/anudeepND/whitelist.git"
+    dest: /opt/whitelist
+    update: yes
+  tags: pihole
+
+- name: Create crontab entry to run whitelist.sh
+  cron:
+    name: Update Pi-Hole whitelist
+    special_time: daily
+    user: root
+    job: "/opt/whitelist/scripts/whitelist.sh"
+  tags: pihole

@@ -1,0 +1,2 @@
+[piholes]
+blackhole.local ansible_user=pi

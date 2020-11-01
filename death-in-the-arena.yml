@@ -30,6 +30,7 @@
 
     - name: Add ResilioSync Apt signing key
       apt_key:
+        id: BE66CC4C3F171DE2
         url: http://linux-packages.resilio.com/resilio-sync/key.asc
         state: present
 

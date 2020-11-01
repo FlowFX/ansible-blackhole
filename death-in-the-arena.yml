@@ -1,0 +1,65 @@
+---
+- name: Install and configure Pi for Resilio Sync and backup storage
+  hosts: syncservers
+  become: yes
+  gather_facts: no
+
+  vars:
+    TIMEZONE: "Europe/Amsterdam"
+
+  tasks:
+    - name: Enable SSH
+      systemd:
+        name: ssh
+        scope: system
+        enabled: yes
+        state: started
+
+    - name: Set authorized key for current user
+      ansible.posix.authorized_key:
+        user: pi
+        state: present
+        key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_ed25519.pub') }}"
+
+    - name: Add ResilioSync sources
+      apt_repository:
+        repo: deb http://linux-packages.resilio.com/resilio-sync/deb resilio-sync non-free
+        state: present
+        filename: resilio-sync
+        update_cache: no
+
+    - name: Add ResilioSync Apt signing key
+      apt_key:
+        url: http://linux-packages.resilio.com/resilio-sync/key.asc
+        state: present
+
+    - name: Update all the things
+      apt: update_cache=yes
+
+    - name: Install ResilioSync
+      apt:
+        name: resilio-sync
+        state: present
+
+    - name: Enable ResilioSync in SystemD
+      systemd:
+        name: resilio-sync
+        scope: system
+        enabled: yes
+        state: started
+
+    - name: Create mount directory
+      file:
+        path: /mnt/resilio-sync
+        state: directory
+        mode: '0755'
+
+    - name: Change file ownership of mount directory
+      file:
+        path: /mnt/resilio-sync
+        owner: rslsync
+        group: rslsync
+
+    - name: Set timezone to Europe/Amsterdam
+      community.general.timezone:
+        name: "{{ TIMEZONE }}"
